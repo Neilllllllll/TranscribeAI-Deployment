@@ -24,6 +24,9 @@ services:
       context: ./Frontend-TranscribeAI
       args:
         - REACT_APP_API_KEY=${FRONTEND_API_KEY}
+        - REACT_APP_MAXSIZEBYTES=${FRONTEND_MAXSIZEBYTES}
+        - REACT_APP_MAXTIMEPROCESSING=${FRONTEND_MAXTIMEPROCESSING}
+        - REACT_APP_TIMEBETTWENEACHPOLLING=${FRONTEND_TIMEBETTWENEACHPOLLING}
     container_name: frontend
     networks:
       - my-network
