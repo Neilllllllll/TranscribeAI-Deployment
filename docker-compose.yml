@@ -12,7 +12,7 @@ services:
       context: ./Reverse-Proxy-TranscribeAI
     container_name: reverse-proxy
     ports:
-      - "5001:80"
+      - "8000:80"
     networks:
       - my-network
     depends_on:
@@ -24,9 +24,9 @@ services:
       context: ./Frontend-TranscribeAI
       args:
         - REACT_APP_API_KEY=${FRONTEND_API_KEY}
-        - REACT_APP_MAXSIZEBYTES=${FRONTEND_MAXSIZEBYTES}
-        - REACT_APP_MAXTIMEPROCESSING=${FRONTEND_MAXTIMEPROCESSING}
-        - REACT_APP_TIMEBETTWENEACHPOLLING=${FRONTEND_TIMEBETTWENEACHPOLLING}
+        - REACT_APP_MAXSIZEBYTES=${FRONTEND_MAX_AUDIO_SIZE_BATCH}
+        - REACT_APP_MAXTIMEPROCESSING=${FRONTEND_MAX_TIME_PROCESSING_BATCH}
+        - REACT_APP_TIMEBETTWENEACHPOLLING=${FRONTEND_TIME_BETTWEN_EACH_POLLING_BATCH}
     container_name: frontend
     networks:
       - my-network
@@ -56,7 +56,6 @@ services:
     container_name: api
     environment:
       <<: *common-variables
-      FRONTEND_URL: ${FRONTEND_URL}
     volumes:
       - audio_data:${AUDIO_STORAGE_PATH}
     networks:
@@ -69,7 +68,7 @@ services:
   batch-worker:
     build:
       context: ./Backend-TranscribeAI
-      dockerfile: Dockerfile.worker
+      dockerfile: Dockerfile.batchWorker
     container_name: batch-worker
     environment:
       <<: *common-variables
@@ -79,11 +78,28 @@ services:
       - audio_data:${AUDIO_STORAGE_PATH}
     networks:
       - my-network
-    restart: on-failure
     depends_on:
       - postgres
       - redis
       - batch-transcription
+
+  diarization-worker:
+    build:
+      context: ./Backend-TranscribeAI
+      dockerfile: Dockerfile.diarizationWorker
+    container_name: diarization-worker
+    environment:
+      <<: *common-variables
+      PYTHONUNBUFFERED: 1
+      WHISPERX_SERVICE_URL: ${WHISPERX_SERVICE_URL}
+    volumes:
+      - audio_data:${AUDIO_STORAGE_PATH}
+    networks:
+      - my-network
+    depends_on:
+      - postgres
+      - redis
+      - diarization-transcription
 
   batch-transcription:
     build:
@@ -107,13 +123,14 @@ services:
 
   diarization-transcription:
     build:
-      context: ./Diarization-TranscribeAI
+      context: ./whisperx-service-transcribeAI
     container_name: diarization-transcription
     environment:
-      - HF_TOKEN=${HF_TOKEN}
       - ASR_MODEL_PATH=${ASR_MODEL_PATH}
       - ASR_MODEL_NAME=${ASR_MODEL_NAME}
-      - ASR_MODEL_NAME=${PORT}
+      - HF_HOME=${HF_HOME}
+      - TORCH_HOME=${TORCH_HOME}
+      - HF_TOKEN=${HF_TOKEN}
     volumes:
       - ${MODELS_PATH}:/models
     networks:
