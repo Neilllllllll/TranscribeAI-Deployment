@@ -13,6 +13,8 @@ services:
     container_name: reverse-proxy
     ports:
       - "8000:80"
+    environment:
+      - NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE}
     networks:
       - my-network
     depends_on:
