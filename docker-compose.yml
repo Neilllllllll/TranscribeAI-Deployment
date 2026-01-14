@@ -62,6 +62,7 @@ services:
     container_name: api
     environment:
       <<: *common-variables
+      MAX_AUDIO_SIZE_MB: ${MAX_AUDIO_SIZE_MB}
     volumes:
       - audio_data:${AUDIO_STORAGE_PATH}
     networks:
