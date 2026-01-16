@@ -12,7 +12,7 @@ services:
       context: ./Reverse-Proxy-TranscribeAI
     container_name: reverse-proxy
     ports:
-      - "8000:80"
+      - "5001:80"
     environment:
       - NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE}
     networks:
