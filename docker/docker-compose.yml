@@ -12,11 +12,12 @@ services:
       context: ./Reverse-Proxy-TranscribeAI
     container_name: reverse-proxy
     ports:
-      - "5001:80"
+      - "80:80"
+      - "443:443"
     environment:
       - NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE}
     volumes:
-      - ./certs:/etc/nginx/ssl:ro
+      - ./Reverse-Proxy-TranscribeAI/certs:/etc/nginx/ssl:ro
     networks:
       - my-network
     depends_on:
