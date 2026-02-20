@@ -1,0 +1,4 @@
+/volumes/
+/docker/volumes/
+.venv
+/config/.env

@@ -1,23 +1,21 @@
-#!/usr/bin/env bash
+# Variables globales
+PROJECT_NAME="transcribe-ai"
 
-# Variable de configuration pour le déploiement de TranscribeAI
+# Dossier requis
+DOCKER_DIR="docker"
+CONFIG_DIR="config"
+VOLUMES_DIR="$DOCKER_DIR/volumes"
+REQUIRED_DIR=("$DOCKER_DIR" "$CONFIG_DIR" "$VOLUMES_DIR")
 
-WORKING_DIR="${WORKING_DIR:-$(pwd)}"
-
-REPO_BASE_URL="https://github.com/Neilllllllll/"
-
-# Liste des dépôts nécessaires
-declare -A REPO_URLS=(
-  [Frontend]="${REPO_BASE_URL}TranscribeAI-Frontend.git"
-  [Backend]="${REPO_BASE_URL}TranscribeAI-Backend.git"
-  [ReverseProxy]="${REPO_BASE_URL}TranscribeAI-ReverseProxy.git"
-  [STT]="${REPO_BASE_URL}TranscribeAI-STT.git"
+# Fichier requis
+COMPOSE_FILE="$DOCKER_DIR/docker-compose.yml"
+ENV_SCHEMA_FILE="$CONFIG_DIR/.env.schema.yaml"
+REQUIRED_FILES=(
+    "$COMPOSE_FILE"
+    "$ENV_SCHEMA_FILE"
 )
 
-# Noms des dossiers cibles pour chaque dépôt
-declare -A FOLDERS=(
-  [Frontend]="TranscribeAI-Frontend"
-  [Backend]="TranscribeAI-Backend"
-  [ReverseProxy]="TranscribeAI-ReverseProxy"
-  [STT]="TranscribeAI-STT"
-)
+# Fichier d'environnement
+ENV_FILE="$CONFIG_DIR/.env"
+
+PORTS=(80 443)

@@ -1,30 +1,36 @@
 #!/bin/bash 
-source installation_script/config.sh
-
-# Script pour nettoyer
+# Remettre l’environnement dans un état propre
 
 function cleanup(){
-    echo "Nettoyage des tentatives d'installation précédentes..."
-    # Supprimer les containers Docker existants
 
-    # Supprimer les images Docker existantes
+    display_header "Nettoyage de l'environnement de déploiement"
 
-    # Supprimer les volumes Docker existants
+    echo ""
 
-    # Supprimer les réseaux Docker existants
+    # Etape 1 : Arrêter et supprimer la stack Docker s'il existe
+    log_info "Arrêt et suppression de la stack Docker existante (si présente)..."
+    remove_docker_stack
 
-    # Supprimer les fichiers de configuration existants
+    echo ""
 
-    # Supprimer les dossier des repos existants
-    remove_repositories
-    echo "Fin du nettoyage. Prêt pour une nouvelle installation."
+    # Etape 2 : Nettoyer le fichier d'environnement s'il existe
+    log_info "Nettoyage du fichier d'environnement..."
+    if file_exists "$ENV_FILE"; then
+        log_info "Fichier d'environnement trouvé. Suppression en cours..."
+        rm "$ENV_FILE"
+    else
+        log_info "Aucun fichier d'environnement trouvé. Aucun nettoyage nécessaire."
+    fi
+
+    echo ""
+
+    log_success "Fin du nettoyage. Prêt pour un nouveau déploiement."
 }
 
-function remove_repositories(){
-    for FOLDER in "${!REPO_URLS[@]}"; do
-        if [ -d "$WORKING_DIR/${FOLDERS[$FOLDER]}" ]; then
-            echo "Suppression du dossier $WORKING_DIR/${FOLDERS[$FOLDER]}..."
-            rm -rf "$WORKING_DIR/${FOLDERS[$FOLDER]}"
-        fi
-    done
+function remove_docker_stack() {
+    if docker compose -p $PROJECT_NAME down --remove-orphans &> /dev/null; then 
+        log_success "Stack Docker arrêtée et supprimée avec succès."
+    else
+        log_info "Aucune stack Docker existante à supprimer ou erreur lors de la suppression. Poursuite du nettoyage."
+    fi
 }

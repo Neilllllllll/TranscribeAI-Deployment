@@ -62,31 +62,12 @@ function check_prerequisites() {
 
     echo ""
 
-    # Prérequis 6 : Certificats SSL dans le dossier volumes/certs/ (cert.crt et cert.pem) pour le reverse proxy (HTTPS)
-    log_info "Vérification des certificats SSL..."
-
-    if file_exists "$CERT_DIR/cert.crt";then
-        log_success "Certificat cert.crt trouvé."
-    else
-        log_error "Certificat cert.crt non trouvé dans $CERT_DIR. Veuillez ajouter le certificat SSL pour continuer."
-        exit 1
-    fi
-
-    if file_exists "$CERT_DIR/cert.pem";then
-        log_success "Certificat cert.pem trouvé."
-    else
-        log_error "Certificat cert.pem non trouvé dans $CERT_DIR. Veuillez ajouter le certificat SSL pour continuer."
-        exit 1
-    fi
-
-    echo ""
-
-    # Prérequis 7 : Python 3.8+ installé pour les scripts de configuration
+    # Prérequis 7 : Python 3.9+ installé pour les scripts de configuration
     log_info "Vérification de la version de Python..."
-    if command_exists python3 && python_version_is_higher_than_3.8; then
+    if command_exists python3 && python_version_is_higher_than_3.9; then
         log_success "Python 3 est installé et compatible."
     else
-        log_error "Python 3 n'est pas installé ou n'est pas compatible. Veuillez installer Python 3.8 ou une version supérieure pour continuer. https://www.python.org/downloads/"
+        log_error "Python 3 n'est pas installé ou n'est pas compatible. Veuillez installer Python 3.9 ou une version supérieure pour continuer. https://www.python.org/downloads/"
         exit 1
     fi
 
@@ -101,6 +82,25 @@ function check_prerequisites() {
         log_success "Environnement virtuel Python créé."
     fi
 
+    # Prérequis 9 : Vérification des dossiers requis 
+    for dir in "${REQUIRED_DIR[@]}"; do
+        if folder_exists "$dir"; then
+            log_success "Le dossier '$dir' existe."
+        else
+            log_error "Le dossier '$dir' est manquant. Veuillez créer ce dossier pour continuer."
+            exit 1
+        fi
+    done
+
+    # Prérequis 10 : Vérification des fichiers requis
+    for file in "${REQUIRED_FILES[@]}"; do
+        if file_exists "$file"; then
+            log_success "Le fichier '$file' existe."
+        else
+            log_error "Le fichier '$file' est manquant. Veuillez créer ce fichier pour continuer."
+            exit 1
+        fi
+    done
 
     log_success "Fin de la vérification. Tous les prérequis sont satisfaits."
 }
@@ -123,15 +123,15 @@ function ports_is_available() {
     return 0
 }
 
-# Vérifie que Python 3.8+ est installé
-function python_version_is_higher_than_3.8(){
+# Vérifie que Python 3.9+ est installé
+function python_version_is_higher_than_3.9(){
     # Découpe le résultat de python3 --version pour extraire la version majeure et mineure
     PYTHON_VERSION=$(python3 --version | awk '{print $2}')
     PYTHON_MAJOR=$(echo $PYTHON_VERSION | cut -d. -f1)
     PYTHON_MINOR=$(echo $PYTHON_VERSION | cut -d. -f2)
 
-    if [ "$PYTHON_MAJOR" -lt 3 ] || { [ "$PYTHON_MAJOR" -eq 3 ] && [ "$PYTHON_MINOR" -lt 8 ]; }; then
-        log_error "Python 3.8 ou une version supérieure est requise. Version actuelle : $PYTHON_VERSION"
+    if [ "$PYTHON_MAJOR" -lt 3 ] || { [ "$PYTHON_MAJOR" -eq 3 ] && [ "$PYTHON_MINOR" -lt 9 ]; }; then
+        log_error "Python 3.9 ou une version supérieure est requise. Version actuelle : $PYTHON_VERSION"
         return 1
     fi
 
@@ -145,16 +145,17 @@ function create_virtualenv() {
         source .venv/bin/activate
         pip install --upgrade pip
         pip install PyYAML
+        pip install pydantic
         deactivate
     else
         rm -rf .venv
         create_virtualenv
     fi
 }
-
-# Vérifie si l'environnement virtuel est déjà configuré et contient la dépendance PyYAML
+    
+# Vérifie si l'environnement virtuel est déjà configuré et contient les dépendances PyYAML et pydantic
 function virtual_env_correct(){
-    if folder_exists ".venv" && [ "$(source .venv/bin/activate && pip list | grep PyYAML)" ]; then
+    if folder_exists ".venv" && [ "$(source .venv/bin/activate && pip list | grep PyYAML && pip list | grep pydantic)" ]; then
         return 0
     else
         return 1

@@ -8,16 +8,18 @@ x-common-variables: &common-variables
 
 services:
   reverse-proxy:
-    build:
-      context: ./Reverse-Proxy-TranscribeAI
+    image: noeuil/transcribe-ai-reverse-proxy:1.0.0
     container_name: reverse-proxy
     ports:
       - "80:80"
       - "443:443"
     environment:
       - NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE}
+      - SERVER_NAME=${SERVER_NAME}
+      - SSL_CERT_NAME=${SSL_CERT_NAME}
+      - SSL_KEY_NAME=${SSL_KEY_NAME}
     volumes:
-      - ./Reverse-Proxy-TranscribeAI/certs:/etc/nginx/ssl:ro
+      - ${LOCAL_SSL_CERTS_PATH}:/etc/nginx/ssl:ro
     networks:
       - my-network
     depends_on:
@@ -25,18 +27,17 @@ services:
       - api
 
   frontend:
-    build:
-      context: ./Frontend-TranscribeAI
-      args:
-        - REACT_APP_API_KEY=${FRONTEND_API_KEY}
-        - REACT_APP_MAX_SIZE_AUDIO_BATCH=${FRONTEND_MAX_AUDIO_SIZE_BATCH}
-        - REACT_APP_MAX_TIME_PROCESSING_BATCH=${FRONTEND_MAX_TIME_PROCESSING_BATCH}
-        - REACT_APP_TIME_BETWEEN_EACH_POLLING_BATCH=${FRONTEND_TIME_BETWEEN_EACH_POLLING_BATCH}
-        - REACT_APP_MAX_SIZE_AUDIO_DIARIZATION=${FRONTEND_MAX_AUDIO_SIZE_DIARIZATION}
-        - REACT_APP_MAX_TIME_PROCESSING_DIARIZATION=${FRONTEND_MAX_TIME_PROCESSING_DIARIZATION}
-        - REACT_APP_TIME_BETWEEN_EACH_POLLING_DIARIZATION=${FRONTEND_TIME_BETWEEN_EACH_POLLING_DIARIZATION}
-        - REACT_APP_MAX_SPEAKERS_DIARIZATION=${FRONTEND_MAX_SPEAKERS_DIARIZATION}
+    image: noeuil/transcribe-ai-frontend:1.0.0
     container_name: frontend
+    environment:
+      - REACT_APP_API_KEY=${API_SECRET_KEY}
+      - REACT_APP_MAX_SIZE_AUDIO_BATCH=${FRONTEND_MAX_AUDIO_SIZE_BATCH}
+      - REACT_APP_MAX_TIME_PROCESSING_BATCH=${FRONTEND_MAX_TIME_PROCESSING_BATCH}
+      - REACT_APP_TIME_BETWEEN_EACH_POLLING_BATCH=${FRONTEND_TIME_BETWEEN_EACH_POLLING_BATCH}
+      - REACT_APP_MAX_SIZE_AUDIO_DIARIZATION=${FRONTEND_MAX_AUDIO_SIZE_DIARIZATION}
+      - REACT_APP_MAX_TIME_PROCESSING_DIARIZATION=${FRONTEND_MAX_TIME_PROCESSING_DIARIZATION}
+      - REACT_APP_TIME_BETWEEN_EACH_POLLING_DIARIZATION=${FRONTEND_TIME_BETWEEN_EACH_POLLING_DIARIZATION}
+      - REACT_APP_MAX_SPEAKERS_DIARIZATION=${FRONTEND_MAX_SPEAKERS_DIARIZATION}
     networks:
       - my-network
 
@@ -48,7 +49,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - ${LOCAL_POSTGRES_STORAGE_PATH}:${POSTGRES_STORAGE_PATH}
     networks:
       - my-network
 
@@ -59,68 +60,59 @@ services:
       - my-network
 
   api:
-    build:
-      context: ./Backend-TranscribeAI
-      dockerfile: Dockerfile.api
+    image: noeuil/transcribe-ai-api:1.0.0
     container_name: api
     environment:
       <<: *common-variables
       MAX_AUDIO_SIZE_MB: ${MAX_AUDIO_SIZE_MB}
     volumes:
-      - audio_data:${AUDIO_STORAGE_PATH}
+      - ${LOCAL_AUDIO_STORAGE_PATH}:${AUDIO_STORAGE_PATH}
     networks:
       - my-network
     restart: on-failure
     depends_on:
       - postgres
       - redis
-
-  batch-worker:
-    build:
-      context: ./Backend-TranscribeAI
-      dockerfile: Dockerfile.batchWorker
-    container_name: batch-worker
+  mono-voice-worker:
+    image: noeuil/transcribe-ai-mono-voice-worker:1.0.0
+    container_name: mono-voice-worker
     environment:
       <<: *common-variables
       PYTHONUNBUFFERED: 1
-      WHISPER_SERVICE_URL: ${WHISPER_SERVICE_URL}
+      WHISPER_SERVICE_URL: ${MONO_VOICE_STT_URL}
     volumes:
-      - audio_data:${AUDIO_STORAGE_PATH}
+      - ${LOCAL_AUDIO_STORAGE_PATH}:${AUDIO_STORAGE_PATH}
     networks:
       - my-network
     depends_on:
       - postgres
       - redis
-      - batch-transcription
+      - mono-voice-stt
 
-  diarization-worker:
-    build:
-      context: ./Backend-TranscribeAI
-      dockerfile: Dockerfile.diarizationWorker
-    container_name: diarization-worker
+  multi-voice-worker:
+    image: noeuil/transcribe-ai-multi-voice-worker:1.0.0
+    container_name: multi-voice-worker
     environment:
       <<: *common-variables
       PYTHONUNBUFFERED: 1
-      WHISPERX_SERVICE_URL: ${WHISPERX_SERVICE_URL}
+      WHISPERX_SERVICE_URL: ${MULTI_VOICE_STT_URL}
     volumes:
-      - audio_data:${AUDIO_STORAGE_PATH}
+      - ${LOCAL_AUDIO_STORAGE_PATH}:${AUDIO_STORAGE_PATH}
     networks:
       - my-network
     depends_on:
       - postgres
       - redis
-      - diarization-transcription
+      - multi-voice-stt
 
-  batch-transcription:
-    build:
-      context: ./whisperservice-transcribeAI
-      dockerfile: Dockerfile.50GPU
-    container_name: batch-transcription
+  mono-voice-stt:
+    image: noeuil/transcribe-ai-mono-voice-stt:1.0.0
+    container_name: mono-voice-stt
     environment:
-      - ASR_MODEL_PATH=${WHISPER_MODEL_PATH}
-      - ASR_MODEL_NAME=${WHISPER_MODEL_NAME}
+      - ASR_MODEL_PATH=${MODELS_STORAGE_PATH}
+      - ASR_MODEL_NAME=${MODEL_NAME_MONO_VOICE}
     volumes:
-      - ${LOCAL_MODELS_DIR}:${WHISPER_MODEL_PATH}
+      - ${LOCAL_MODELS_STORAGE_PATH}:${MODELS_STORAGE_PATH}
     networks:
       - my-network
     deploy:
@@ -131,18 +123,17 @@ services:
               count: all
               capabilities: [gpu]
 
-  diarization-transcription:
-    build:
-      context: ./whisperx-service-transcribeAI
-    container_name: diarization-transcription
+  multi-voice-stt:
+    image: noeuil/transcribe-ai-multi-voice-stt:v1.0.0
+    container_name: multi-voice-stt
     environment:
-      - ASR_MODEL_PATH=${ASR_MODEL_PATH}
-      - ASR_MODEL_NAME=${ASR_MODEL_NAME}
+      - ASR_MODEL_PATH=${MODELS_STORAGE_PATH}
+      - ASR_MODEL_NAME=${ASR_MODEL_NAME_MULTI_VOICE}
       - HF_HOME=${HF_HOME}
       - TORCH_HOME=${TORCH_HOME}
       - HF_TOKEN=${HF_TOKEN}
     volumes:
-      - ${MODELS_PATH}:/models
+      - ${LOCAL_MODELS_STORAGE_PATH}:${MODELS_STORAGE_PATH}
     networks:
       - my-network
     deploy:
@@ -153,10 +144,9 @@ services:
               count: all
               capabilities: [gpu]
 
+volumes:
+  postgres_data:
+
 networks:
   my-network:
     driver: bridge
-
-volumes:
-  postgres_data:
-  audio_data:
