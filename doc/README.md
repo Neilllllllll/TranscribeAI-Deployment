@@ -1,4 +1,5 @@
 
+![Logo](./assets/Schéma-stack-docker.png)
 
 Prérequis : 
 - Docker et docker compose d'installés et configurés pour utiliser les GPU NVIDIA (nvidia container toolkit)

@@ -9,7 +9,6 @@ source scripts/02_prerequisites.sh
 source scripts/04_deploy.sh
 source scripts/05_verify.sh
 
-
 # Etape 1 : Tout nettoyer avant de commencer 
 cleanup
 
@@ -44,4 +43,5 @@ for i in $(seq 1 $time); do
     echo -ne "Attente... $i/$time\r"
     sleep 1
 done
+
 verify_deployment
