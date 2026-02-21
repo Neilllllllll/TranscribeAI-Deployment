@@ -99,53 +99,6 @@ Scripts disponibles :
 
 ## Installer la stack depuis zéro
 
-### Flow du script
-
-Le fichier `deploy.sh` permet de déployer l’application sur une machine hôte. Il se compose de six étapes.
-
-**Etape 1 : Nettoyage des ressources existantes**
-
-- Suppression du fichier `config/.env` existant afin d’éviter toute incohérence de configuration
-- Suppression des conteneurs issus d’une tentative précédente (le cas échéant)
-
-> ⚠️ **Important**
-> Cette étape supprime les tentatives de déploiements précédentes dont les données persistées ( conteneur, volumes et réseau virtuel )
-
-**Etape 2 : Construction de la structure des dossiers et fichiers**
-
-- Création / vérification des dossiers nécessaires : `docker`, `config`, `docker/volumes`
-- Vérification de la présence des fichiers requis : `docker-compose.yml`, `.env.schema.yaml`
-
-**3. Vérification des prérequis**
-
-- Docker installé
-- Docker Compose installé
-- Drivers NVIDIA installés (si utilisation GPU)
-- NVIDIA Container Toolkit installé (accès GPU via Docker)
-- Ports `80` et `443` disponibles
-- Python 3.9 ou supérieur installé
-- Création d’un environnement virtuel Python
-
-**4. Configuration des variables d’environnement**
-
-Cette étape exécute un script Python qui :
-
-- Charge le fichier `config/.env.schema.yaml`, contenant le modèle des variables d’environnement
-- Valide et trie les variables
-- Demande à l’utilisateur de renseigner les variables dont `mode: user`
-- Applique des validateurs sur les valeurs saisies afin d’assurer leur cohérence
-- Génère le fichier `config/.env`
-
-**5. Déploiement de la stack**
-
-- Exécution de la commande Docker Compose avec les variables définies
-
-``` docker compose -f $COMPOSE_FILE --env-file $ENV_FILE -p $PROJECT_NAME up -d ```
-
-**6. Vérification du bon fonctionnement des services**
-
-- Vérification que les services sont correctement démarrés
-
 ### Déployer la stack sur une machine hôte
 
 > ⚠️ **Prérequis importants**
@@ -278,3 +231,50 @@ Puis lancer le script :
 
 Si tous les prérequis sont satisfaits, le script va vous demander de renseigner les variables d’environnement nécessaires au bon fonctionnement de la stack.
 Chaque variable est accompagnée d'une description et d'un exemple de valeur. Des validateurs sont appliqués pour assurer la cohérence des valeurs saisies. Il est possible de laisser une variable vide, si tel est le cas le script utilisera la valeur par défaut.
+
+### Que fait le script de déploiement ?
+
+Le fichier `deploy.sh` permet de déployer l’application sur une machine hôte. Il se compose de six étapes.
+
+**Etape 1 : Nettoyage des ressources existantes**
+
+- Suppression du fichier `config/.env` existant afin d’éviter toute incohérence de configuration
+- Suppression des conteneurs issus d’une tentative précédente (le cas échéant)
+
+> ⚠️ **Important**
+> Cette étape supprime les tentatives de déploiements précédentes dont les données persistées ( conteneur, volumes et réseau virtuel )
+
+**Etape 2 : Construction de la structure des dossiers et fichiers**
+
+- Création / vérification des dossiers nécessaires : `docker`, `config`, `docker/volumes`
+- Vérification de la présence des fichiers requis : `docker-compose.yml`, `.env.schema.yaml`
+
+**3. Vérification des prérequis**
+
+- Docker installé
+- Docker Compose installé
+- Drivers NVIDIA installés (si utilisation GPU)
+- NVIDIA Container Toolkit installé (accès GPU via Docker)
+- Ports `80` et `443` disponibles
+- Python 3.9 ou supérieur installé
+- Création d’un environnement virtuel Python
+
+**4. Configuration des variables d’environnement**
+
+Cette étape exécute un script Python qui :
+
+- Charge le fichier `config/.env.schema.yaml`, contenant le modèle des variables d’environnement
+- Valide et trie les variables
+- Demande à l’utilisateur de renseigner les variables dont `mode: user`
+- Applique des validateurs sur les valeurs saisies afin d’assurer leur cohérence
+- Génère le fichier `config/.env`
+
+**5. Déploiement de la stack**
+
+- Exécution de la commande Docker Compose avec les variables définies
+
+``` docker compose -f $COMPOSE_FILE --env-file $ENV_FILE -p $PROJECT_NAME up -d ```
+
+**6. Vérification du bon fonctionnement des services**
+
+- Vérification que les services sont correctement démarrés
