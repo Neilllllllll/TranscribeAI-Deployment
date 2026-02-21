@@ -3,10 +3,6 @@
 
 # Etape 1 : Vérifier les prérequis 
 function check_prerequisites() {
-    display_header "Vérification des prérequis pour le déploiement de TranscribeAI"
-
-    echo ""
-
     # Prérequis 1 : Docker d'installé
     log_info "Vérification de l'installation de Docker..."
     if command_exists docker; then
@@ -82,25 +78,14 @@ function check_prerequisites() {
         log_success "Environnement virtuel Python créé."
     fi
 
-    # Prérequis 9 : Vérification des dossiers requis 
-    for dir in "${REQUIRED_DIR[@]}"; do
-        if folder_exists "$dir"; then
-            log_success "Le dossier '$dir' existe."
-        else
-            log_error "Le dossier '$dir' est manquant. Veuillez créer ce dossier pour continuer."
-            exit 1
-        fi
-    done
-
-    # Prérequis 10 : Vérification des fichiers requis
-    for file in "${REQUIRED_FILES[@]}"; do
-        if file_exists "$file"; then
-            log_success "Le fichier '$file' existe."
-        else
-            log_error "Le fichier '$file' est manquant. Veuillez créer ce fichier pour continuer."
-            exit 1
-        fi
-    done
+    # Prérequis 9 : Accès à Internet pour télécharger les images Docker et les dépendances Python
+    log_info "Vérification de l'accès à Internet..."
+    if have_access_to_internet; then
+        log_success "Accès à Internet est disponible."
+    else
+        log_error "Aucun accès à Internet détecté. Veuillez vous assurer que la machine a accès à Internet pour continuer."
+        exit 1
+    fi
 
     log_success "Fin de la vérification. Tous les prérequis sont satisfaits."
 }
@@ -156,6 +141,14 @@ function create_virtualenv() {
 # Vérifie si l'environnement virtuel est déjà configuré et contient les dépendances PyYAML et pydantic
 function virtual_env_correct(){
     if folder_exists ".venv" && [ "$(source .venv/bin/activate && pip list | grep PyYAML && pip list | grep pydantic)" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+function have_access_to_internet() {
+    if ping -c 1 google.com &> /dev/null; then
         return 0
     else
         return 1

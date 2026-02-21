@@ -42,7 +42,7 @@ def file_exists(value, base_path):
     import os
     full_path = os.path.join(base_path, value)
     if not os.path.isfile(full_path):
-        raise ValueError(f"Le fichier '{value}' n'existe pas dans le répertoire '{base_path}'.")
+        raise ValueError(f"Le fichier '{value}' n'existe pas dans le répertoire '{base_path}'. affichage du chemin complet : {full_path}")
     return value
 
 def int_range(value, min, max):

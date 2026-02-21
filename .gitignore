@@ -1,4 +1,6 @@
-/volumes/
+/volumes/audio_storage/
+/volumes/postgres/
+
 /docker/volumes/
 .venv
 /config/.env

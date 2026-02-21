@@ -1,11 +1,6 @@
 # Utilitaires génériques réutilisables 
 
 # Affiche d'un titre de section
-function display_header() {
-    echo "========================================"
-    echo "$1"
-    echo "========================================"
-}
 
 # Retourne 0 si le fichier existe, 1 sinon
 function file_exists() {
@@ -23,6 +18,14 @@ function folder_exists() {
     else
         return 1
     fi
+}
+
+function create_folder(){
+    mkdir -p "$1"
+}
+
+function create_file(){
+    touch "$1"
 }
 
 # Retourne 0 si la commande existe, 1 sinon

@@ -3,10 +3,6 @@
 
 function cleanup(){
 
-    display_header "Nettoyage de l'environnement de déploiement"
-
-    echo ""
-
     # Etape 1 : Arrêter et supprimer la stack Docker s'il existe
     log_info "Arrêt et suppression de la stack Docker existante (si présente)..."
     remove_docker_stack
@@ -28,7 +24,7 @@ function cleanup(){
 }
 
 function remove_docker_stack() {
-    if docker compose -p $PROJECT_NAME down --remove-orphans &> /dev/null; then 
+    if docker compose -p $PROJECT_NAME down --remove-orphans -v &> /dev/null; then 
         log_success "Stack Docker arrêtée et supprimée avec succès."
     else
         log_info "Aucune stack Docker existante à supprimer ou erreur lors de la suppression. Poursuite du nettoyage."

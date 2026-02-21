@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from enum import Enum
 from python_lib.validators import VALIDATORS
+from python_lib.logs import display_header, display_success, display_error, display_warning, display_info
 
 # =====================
 # ENUMS
@@ -52,7 +53,7 @@ class EnvVar(BaseModel):
         return value
     
     def ask_user(self):
-        prompt = f"Entrez la valeur pour '{self.title}' : "
+        prompt = f"Entrez la valeur pour '{self.title}' ou appuyez sur Entrée pour garder la valeur par défaut : "
         return input(prompt)
     
     # Convertit la valeur en fonction du type défini (string, int, bool)
@@ -99,8 +100,8 @@ class EnvVar(BaseModel):
                     return self.validate_value(config_value)
                 except ValueError as e:
                     error = True
-                    print(f"Erreur de validation pour la valeur par défaut: {e}")
-                    print("Veuillez corriger la configuration du schéma pour cette variable.")
+                    display_warning(f"Erreur de validation pour la valeur par défaut: {e}")
+                    display_info("Veuillez corriger cette variable manuellement.")
         # Cas où la variable est en mode "user" (doit être saisie par l'utilisateur)
         if(self.mode == ModeEnum.user):
             while True:
@@ -112,22 +113,22 @@ class EnvVar(BaseModel):
                 try:
                     return self.validate_value(config_value)
                 except ValueError as e:
-                    print(f"Erreur de validation: {e}")
-                    print("Veuillez réessayer.")
+                    display_warning(f"Erreur de validation: {e}")
+                    display_info("Veuillez réessayer.")
 
     # Fonction pour avoir les infos d'une variable
     # Return : une string avec les infos de la variable (titre, description, exemple, défaut, etc.)
     def get_info(self):
-        info = f" → {self.title} ({self.var_type})"
+        info = f" → {self.title} \n"
         if self.description:
-            info += f": {self.description}"
+            info += f"Description → {self.description} \n"
 
         if not self.required:
             info += " (optionnel)"
         if self.example:
             info += f" (exemple: {self.example})"
         if self.default is not None:
-            info += f" (défaut: {self.default})"
+            info += f" (Valeur par défaut: {self.default})"
         return info
         
 
@@ -149,23 +150,23 @@ class Section(BaseModel):
         section_config = {}
 
         if not self.vars:
-            print(f"\nSection '{self.title}' (0 variable) - {self.description}")
+            display_header("Section", self.title)
+            display_info(f"Section '{self.title}' (0 variable) - {self.description}")
             return section_config
         
         section_config["# " + self.title] = self.description
 
         total_vars = len(self.vars) if self.vars else 0
 
-        print("\n" + "=" * 72)
-        print(f"Configuration du service : {self.title}")
-        print(self.description)
-        print("=" * 72)
+        display_header("Section", self.title, f"({total_vars} variable{'s' if total_vars > 1 else ''})")
+        display_info(self.description)
 
         for var_key, var in self.vars.items():
             value = var.get_config_from_user()
             section_config[var_key] = value
+            print()
 
-        print(f"\nService '{self.title}' configuré ({total_vars} variable(s)).")
+        display_success(f"Service '{self.title}' configuré ({total_vars} variable(s)).")
 
         return section_config
 
