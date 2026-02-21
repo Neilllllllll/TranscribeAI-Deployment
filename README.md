@@ -176,8 +176,8 @@ Le reverse proxy mappe les ports `80` et `443` de la machine hôte.
 
 Vérification :
 
-`sudo lsof -i :80`  
-`sudo lsof -i :443`
+`lsof -Pi :80 -sTCP:LISTEN -t`  
+`lsof -Pi :443 -sTCP:LISTEN -t`
 
 ---
 
@@ -282,7 +282,7 @@ Puis lancer le script :
 ```
 
 Si tous les prérequis sont satisfaits, le script vous invitera à renseigner les variables d’environnement nécessaires au bon fonctionnement de la stack.
-Chaque variable est accompagnée d’une description ainsi que d’un exemple de valeur. Des mécanismes de validation sont appliqués afin de garantir la cohérence des informations saisies.
+Chaque variable est accompagnée d’une description, d’un exemple de valeur et d'une valeur par défaut. Des mécanismes de validation sont appliqués afin de garantir la cohérence des informations saisies.
 Il est possible de laisser certaines variables vides en laissant le champ vide. Dans ce cas, la valeur par défaut sera utilisée.
 Certaines variables sont automatiquement renseignées par le script ; elles seront alors simplement affichées à titre informatif.
 
