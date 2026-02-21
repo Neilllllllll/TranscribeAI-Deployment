@@ -10,8 +10,8 @@ Ce dépôt fournit, une présentation de l'outil ainsi qu'un script de déploiem
     - [Architecture de l'app](#architecture-de-lapp)
     - [Mutualisation des services](#mutualisation-des-services)
 - [Scripts de déploiement](#scripts-de-déploiement)
-    - [Flow du script de déploiement](#flow-du-script-de-déploiement)
-    - [Déployer la stack sur une machine](#déployer-la-stack-sur-une-machine)
+    - [Installer la stack depuis zéro](#installer-la-stack-depuis-zéro)
+    - [Que fait le script de déploiement ?](#que-fait-le-script-de-déploiement-)
 
 # Présentation de TranscribeAI
 
@@ -281,9 +281,10 @@ Puis lancer le script :
 ./deploy.sh
 ```
 
-Si tous les prérequis sont satisfaits, le script va vous demander de renseigner les variables d’environnement nécessaires au bon fonctionnement de la stack.
-Chaque variable est accompagnée d'une description et d'un exemple de valeur. Des validateurs sont appliqués pour assurer la cohérence des valeurs saisies. 
-Il est possible de laisser une variable vide, si tel est le cas le script utilisera la valeur par défaut de plus certaines variables sont automatiquement renseignées par le script dans ce cas la elles vous seront simplement affichées.
+Si tous les prérequis sont satisfaits, le script vous invitera à renseigner les variables d’environnement nécessaires au bon fonctionnement de la stack.
+Chaque variable est accompagnée d’une description ainsi que d’un exemple de valeur. Des mécanismes de validation sont appliqués afin de garantir la cohérence des informations saisies.
+Il est possible de laisser certaines variables vides en laissant le champ vide. Dans ce cas, la valeur par défaut sera utilisée.
+Certaines variables sont automatiquement renseignées par le script ; elles seront alors simplement affichées à titre informatif.
 
 ### Que fait le script de déploiement ?
 
