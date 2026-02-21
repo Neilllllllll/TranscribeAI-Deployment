@@ -1,6 +1,4 @@
 .venv
 /config/.env
-docker/volumes/certs/cert.key
-docker/volumes/certs/key.pem
-docker/volumes/certs/cert.crt
-docker/volumes/certs/key.key
+cert.crt
+cert.key
