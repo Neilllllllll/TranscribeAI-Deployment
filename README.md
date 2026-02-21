@@ -187,6 +187,7 @@ Il vous faudra créer un compte Hugging Face si vous n’en avez pas déjà un, 
 
 Documentation officielle : https://huggingface.co/docs/hub/security-tokens
 
+---
 #### **Prérequis 8 : Vérifier la version de Python et les modules nécessaires**
 Le script de déploiement utilise un script Python pour la configuration des variables d’environnement.
 Il est donc nécessaire d’avoir Python 3.9 ou supérieur installé, avec python3-venv pour la création d’un environnement virtuel et pip pour installer les dépendances Python.
@@ -215,7 +216,7 @@ Vérification de la présence de pip :
 ```bash
 pip3 --version
 ```
-
+---
 #### **Prérequis 9 : Certificats HTTPS**
 
 Pour activer HTTPS, fournir :
