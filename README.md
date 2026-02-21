@@ -142,7 +142,6 @@ Installation :
 Vérification :
 
 `docker -v`  
-`docker run hello-world` <br>
 `docker compose version`
 
 ---
@@ -182,7 +181,42 @@ Vérification :
 
 ---
 
-#### **Prérequis 7 : Certificats HTTPS**
+#### **Prérequis 7 : Générer un token Hugging Face**
+Un token Hugging Face en mode "READ" est nécessaire pour télécharger les modèles IA utilisés par les services STT. 
+Il vous faudra créer un compte Hugging Face si vous n’en avez pas déjà un, puis générer un token d’accès en suivant les instructions de la documentation officielle.
+
+Documentation officielle : https://huggingface.co/docs/hub/security-tokens
+
+#### **Prérequis 8 : Vérifier la version de Python et les modules nécessaires**
+Le script de déploiement utilise un script Python pour la configuration des variables d’environnement.
+Il est donc nécessaire d’avoir Python 3.9 ou supérieur installé, avec python3-venv pour la création d’un environnement virtuel et pip pour installer les dépendances Python.
+
+Installer Python 3.9 ou supérieur et les modules nécessaires :
+
+```bash
+sudo apt update
+sudo apt install python3 python3-venv python3-pip -y
+```
+
+Vérification de la version de Python :
+
+```bash
+python3 --version
+```
+
+Vérification de la présence de python3-venv :
+
+```bash
+python3 -m venv --help
+```
+
+Vérification de la présence de pip :
+
+```bash
+pip3 --version
+```
+
+#### **Prérequis 9 : Certificats HTTPS**
 
 Pour activer HTTPS, fournir :
 
@@ -195,6 +229,12 @@ Dans :
 
 > Des certificats auto-signés peuvent être utilisés en environnement de développement ou de test.
 
+Placé vous dans le dossier des ```docker/volumes/certs/``` :
+
+```bash
+cd docker/volumes/certs/
+```
+
 Génération d’un certificat auto-signé :
 
 ```bash
@@ -205,12 +245,23 @@ openssl req -x509 -newkey rsa:4096 \
   -nodes \
   -subj "/C=FR/ST=France/L=Paris/O=TranscribeAI/CN=localhost"
 ```
-Puis
+
+#### Prérequis 10 (Optionnel) : Ajouter l'utilisateur au groupe Docker
+
+Ajouter votre utilisateur au groupe Docker permet d’exécuter les commandes Docker sans avoir à rentrer le mot de passe sudo à chaque fois.
+
 ```bash
-mv cert.key docker/volumes/certs/
+sudo usermod -aG docker $USER
 ```
+
 ```bash
-mv cert.crt docker/volumes/certs/
+sudo reboot
+```
+
+Vérification :
+
+```bash
+docker run hello-world
 ```
 ---
 
@@ -230,7 +281,8 @@ Puis lancer le script :
 ```
 
 Si tous les prérequis sont satisfaits, le script va vous demander de renseigner les variables d’environnement nécessaires au bon fonctionnement de la stack.
-Chaque variable est accompagnée d'une description et d'un exemple de valeur. Des validateurs sont appliqués pour assurer la cohérence des valeurs saisies. Il est possible de laisser une variable vide, si tel est le cas le script utilisera la valeur par défaut.
+Chaque variable est accompagnée d'une description et d'un exemple de valeur. Des validateurs sont appliqués pour assurer la cohérence des valeurs saisies. 
+Il est possible de laisser une variable vide, si tel est le cas le script utilisera la valeur par défaut de plus certaines variables sont automatiquement renseignées par le script dans ce cas la elles vous seront simplement affichées.
 
 ### Que fait le script de déploiement ?
 

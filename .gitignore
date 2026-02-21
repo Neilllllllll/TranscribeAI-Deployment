@@ -1,6 +1,6 @@
-/volumes/audio_storage/
-/volumes/postgres/
-
-/docker/volumes/
 .venv
 /config/.env
+docker/volumes/certs/cert.key
+docker/volumes/certs/key.pem
+docker/volumes/certs/cert.crt
+docker/volumes/certs/key.key

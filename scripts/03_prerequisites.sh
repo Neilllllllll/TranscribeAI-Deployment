@@ -69,7 +69,19 @@ function check_prerequisites() {
 
     echo ""
 
-    # Prérequis 8 : Création d'un environnement virtuel Python pour le script de configuration
+    # Prérequis 8 : python3-venv installé pour créer un environnement virtuel pour les scripts de configuration
+    log_info "Vérification de l'installation du module venv pour Python..."
+    if command_exists python3 -m venv &> /dev/null; then
+        log_success "Le module venv pour Python est installé."
+    else
+        log_error "Le module venv pour Python n'est pas installé. Veuillez installer python3-venv pour continuer. https://docs.python.org/3/library/venv.html#creating-virtual-environments"
+        exit 1
+    fi
+
+    echo ""
+
+    # Prérequis 9 : Création d'un environnement virtuel Python pour le script de configuration
+
     if virtual_env_correct; then
         log_success "Environnement virtuel Python déjà configuré."
     else
@@ -78,7 +90,7 @@ function check_prerequisites() {
         log_success "Environnement virtuel Python créé."
     fi
 
-    # Prérequis 9 : Accès à Internet pour télécharger les images Docker et les dépendances Python
+    # Prérequis 10 : Accès à Internet pour télécharger les images Docker et les dépendances Python
     log_info "Vérification de l'accès à Internet..."
     if have_access_to_internet; then
         log_success "Accès à Internet est disponible."
@@ -91,7 +103,7 @@ function check_prerequisites() {
 }
 
 function gpu_is_supported_in_docker() {
-    if docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi &> /dev/null
+    if sudo docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi &> /dev/null
     then
         return 0
     else

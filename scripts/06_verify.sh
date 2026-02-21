@@ -5,8 +5,7 @@ function verify_deployment(){
 
     # Etape 1 : Vérifie que tous les conteneurs sont "up" (status "running")
     log_info "Vérification que tous les conteneurs sont en status 'running'..."
-
-    CONTAINERS_IDS=$(docker compose -p $PROJECT_NAME ps -a -q) 
+    CONTAINERS_IDS=$(sudo docker compose -p $PROJECT_NAME ps -a -q) 
     CONTAINER_EXCITED=()
     IS_ALL_UP=true
     
@@ -19,12 +18,12 @@ function verify_deployment(){
 
     if [ "$IS_ALL_UP" = false ]; then
         for CONTAINER_ID in "${CONTAINER_EXCITED[@]}"; do
-            container_name=$(docker inspect --format '{{.Name}}' $CONTAINER_ID)
+            container_name=$(sudo docker inspect --format '{{.Name}}' $CONTAINER_ID)
             log_error "Conteneur $container_name n'est pas en status 'running'."
             log_info "Vous pouvez consulter les logs du conteneur avec la commande : docker logs $container_name"
         done
         exit 1
-    fi
+    fi      
 
     log_success "Tous les conteneurs sont en status 'running'."
 
@@ -39,7 +38,7 @@ function verify_deployment(){
 # Vérifie que le conteneur avec l'ID $1 est "up" via docker inspect
 # Retourne true si le conteneur est "up", false sinon
 function is_container_up(){
-    local status=$(docker inspect -f '{{.State.Status}}' $1)
+    local status=$(sudo docker inspect -f '{{.State.Status}}' $1)
     if [ "$status" == "running" ]; then
         return 0
     else

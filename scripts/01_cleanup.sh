@@ -24,7 +24,7 @@ function cleanup(){
 }
 
 function remove_docker_stack() {
-    if docker compose -p $PROJECT_NAME down --remove-orphans -v &> /dev/null; then 
+    if sudo docker compose -p $PROJECT_NAME down --remove-orphans -v &> /dev/null; then 
         log_success "Stack Docker arrêtée et supprimée avec succès."
     else
         log_info "Aucune stack Docker existante à supprimer ou erreur lors de la suppression. Poursuite du nettoyage."
