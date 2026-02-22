@@ -151,7 +151,8 @@ Vérification :
 
 #### **Prérequis 4 : GPU NVIDIA & drivers installés**
 
-Requis uniquement pour l’accélération GPU des modèles STT.
+Requis pour l’accélération GPU des modèles STT.
+Documentation officielle : https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/introduction.html
 
 Vérification :
 

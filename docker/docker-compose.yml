@@ -66,7 +66,7 @@ services:
       <<: *common-variables
       MAX_AUDIO_SIZE_MB: ${MAX_AUDIO_SIZE_MB}
     volumes:
-      - ${LOCAL_AUDIO_STORAGE_PATH}:${AUDIO_STORAGE_PATH}
+      - audio_data:${AUDIO_STORAGE_PATH}
     networks:
       - transcribe-ai-network
     restart: on-failure
@@ -81,7 +81,7 @@ services:
       PYTHONUNBUFFERED: 1
       WHISPER_SERVICE_URL: ${MONO_VOICE_STT_URL}
     volumes:
-      - ${LOCAL_AUDIO_STORAGE_PATH}:${AUDIO_STORAGE_PATH}
+      - audio_data:${AUDIO_STORAGE_PATH}
     networks:
       - transcribe-ai-network
     depends_on:
@@ -97,7 +97,7 @@ services:
       PYTHONUNBUFFERED: 1
       WHISPERX_SERVICE_URL: ${MULTI_VOICE_STT_URL}
     volumes:
-      - ${LOCAL_AUDIO_STORAGE_PATH}:${AUDIO_STORAGE_PATH}
+      - audio_data:${AUDIO_STORAGE_PATH}
     networks:
       - transcribe-ai-network
     depends_on:
@@ -112,7 +112,7 @@ services:
       - ASR_MODEL_PATH=${MODELS_STORAGE_PATH}
       - ASR_MODEL_NAME=${MODEL_NAME_MONO_VOICE}
     volumes:
-      - ${LOCAL_MODELS_STORAGE_PATH}:${MODELS_STORAGE_PATH}
+      - models_data:${MODELS_STORAGE_PATH}
     networks:
       - transcribe-ai-network
     deploy:
@@ -133,7 +133,7 @@ services:
       - TORCH_HOME=${TORCH_HOME}
       - HF_TOKEN=${HF_TOKEN}
     volumes:
-      - ${LOCAL_MODELS_STORAGE_PATH}:${MODELS_STORAGE_PATH}
+      - models_data:${MODELS_STORAGE_PATH}
     networks:
       - transcribe-ai-network
     deploy:
@@ -146,6 +146,8 @@ services:
 
 volumes:
   postgres_data:
+  audio_data:
+  models_data:
 
 networks:
   transcribe-ai-network:
