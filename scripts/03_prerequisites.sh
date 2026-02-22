@@ -137,7 +137,7 @@ function python_version_is_higher_than_3.9(){
 
 # Crée un environnement virtuel Python et installe la dépendance PyYAML
 function create_virtualenv() {
-    if [ ! -d ".venv" ]; then
+    if ! folder_exists ".venv"; then
         python3 -m venv .venv
         source .venv/bin/activate
         pip install --upgrade pip
@@ -152,11 +152,22 @@ function create_virtualenv() {
     
 # Vérifie si l'environnement virtuel est déjà configuré et contient les dépendances PyYAML et pydantic
 function virtual_env_correct(){
-    if folder_exists ".venv" && [ "$(source .venv/bin/activate && pip list | grep PyYAML && pip list | grep pydantic)" ]; then
-        return 0
-    else
+    if ! folder_exists ".venv"; then
         return 1
     fi
+
+    source .venv/bin/activate || {
+        return 1
+    }
+
+    if pip show PyYAML >/dev/null 2>&1 && pip show pydantic >/dev/null 2>&1; then
+        deactivate
+        return 0
+    else
+        deactivate
+        return 1
+    fi
+
 }
 
 function have_access_to_internet() {
