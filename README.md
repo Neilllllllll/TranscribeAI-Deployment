@@ -268,6 +268,11 @@ Vérification :
 ```bash
 docker run hello-world
 ```
+
+#### **Prérequis 10 : Fournir un logo personnalisé pour l’interface utilisateur.**
+
+Pour cela ajouter une image nommée `logo.svg` dans le dossier `docker/volumes/assets/`.
+
 ---
 
 ### 🚀 **Lancer le script**

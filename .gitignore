@@ -1,4 +1,4 @@
 .venv
 /config/.env
-cert.crt
-cert.key
+docker/volumes/certs/*
+docker/volumes/assets/*

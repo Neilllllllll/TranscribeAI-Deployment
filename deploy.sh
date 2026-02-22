@@ -35,14 +35,15 @@ source ./.venv/bin/activate
 python3 scripts/04_configure_env.py
 status=$? # Récupère le code de retour du script Python
 
+deactivate
+
 if [ $status -eq 0 ]; then
     log_success "Configuration des variables d'environnement terminée avec succès."
 else
     log_error "Erreur pendant la configuration des variables d'environnement, le script d'installation s'est arrêté."
-    deactivate
     exit 1
 fi
-deactivate
+
 
 # Etape 5 : Lancer la stack avec docker-compose
 display_header "Déploiement de la stack Docker"
