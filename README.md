@@ -107,12 +107,15 @@ Scripts disponibles :
 
 #### **Prérequis 1 : Système d’exploitation**
 
-Votre système d’exploitation doit être une distribution Linux  
+Votre système d’exploitation doit être une distribution Linux.
 (**Ubuntu 24.04 LTS recommandé**).
 
 | Distributions testées |
 |----------------------|
 | [Ubuntu 24.04 LTS](https://ubuntu.com/download/desktop) |
+| [Ubuntu 22.04 LTS](https://releases.ubuntu.com/jammy/) |
+
+✅ Supporte WSL mais n’est pas recommandé.
 
 Pour vérifier votre distribution :
 
