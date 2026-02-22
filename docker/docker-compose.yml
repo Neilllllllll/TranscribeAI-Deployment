@@ -49,7 +49,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     volumes:
-      - ${LOCAL_POSTGRES_STORAGE_PATH}:${POSTGRES_STORAGE_PATH}
+      - postgres_data:${POSTGRES_STORAGE_PATH}
     networks:
       - transcribe-ai-network
 
