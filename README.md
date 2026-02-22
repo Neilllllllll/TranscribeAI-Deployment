@@ -295,6 +295,9 @@ Chaque variable est accompagnée d’une description, d’un exemple de valeur e
 Il est possible de laisser certaines variables vides en laissant le champ vide. Dans ce cas, la valeur par défaut sera utilisée.
 Certaines variables sont automatiquement renseignées par le script ; elles seront alors simplement affichées à titre informatif.
 
+> ⚠️ **Important**
+> Le premier lancement de la stack peut prendre plusieurs minutes, notamment en raison du téléchargement des images Docker et des modèles IA.
+
 ### Que fait le script de déploiement ?
 
 Le fichier `deploy.sh` permet de déployer l’application sur une machine hôte. Il se compose de six étapes.

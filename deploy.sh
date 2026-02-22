@@ -34,7 +34,6 @@ echo ""
 source ./.venv/bin/activate
 python3 scripts/04_configure_env.py
 status=$? # Récupère le code de retour du script Python
-
 deactivate
 
 if [ $status -eq 0 ]; then
