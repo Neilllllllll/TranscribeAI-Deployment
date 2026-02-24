@@ -191,6 +191,9 @@ Il vous faudra créer un compte Hugging Face si vous n’en avez pas déjà un, 
 
 Documentation officielle : https://huggingface.co/docs/hub/security-tokens
 
+> ⚠️ **Important**
+> Le service de diarization utilise un modèle hugging face qui requiert d'accepter des conditions d'utilisation avant de pouvoir le télécharger. Assurez-vous d'avoir accepté ces conditions avec votre compte Hugging Face associé au token que vous allez utiliser. https://huggingface.co/pyannote/speaker-diarization-3.1, https://huggingface.co/pyannote/segmentation-3.0
+
 ---
 #### **Prérequis 8 : Vérifier la version de Python et les modules nécessaires**
 Le script de déploiement utilise un script Python pour la configuration des variables d’environnement.

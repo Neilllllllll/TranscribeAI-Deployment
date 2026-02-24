@@ -4,3 +4,5 @@ docker/volumes/certs/*
 !docker/volumes/certs/.gitkeep
 docker/volumes/assets/*
 !docker/volumes/assets/.gitkeep
+
+TODO.txt
