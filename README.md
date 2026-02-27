@@ -110,6 +110,10 @@ Scripts disponibles :
 Votre système d’exploitation doit être une distribution Linux.
 (**Ubuntu 24.04 LTS recommandé**).
 
+| Architectures testées |
+|----------------------|
+| x86_64 |
+
 | Distributions testées |
 |----------------------|
 | [Ubuntu 24.04 LTS](https://ubuntu.com/download/desktop) |
